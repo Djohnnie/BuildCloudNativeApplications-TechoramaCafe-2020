@@ -21,7 +21,6 @@ namespace CSharpWars.Logic
         private readonly IRandomHelper _randomHelper;
         private readonly IRepository<Bot> _botRepository;
         private readonly IRepository<BotScript> _scriptRepository;
-        private readonly IRepository<Bot, BotScript> _botScriptRepository;
         private readonly IRepository<Player> _playerRepository;
         private readonly IMapper<Bot, BotDto> _botMapper;
         private readonly IMapper<Bot, BotToCreateDto> _botToCreateMapper;
@@ -32,7 +31,6 @@ namespace CSharpWars.Logic
             IRandomHelper randomHelper,
             IRepository<Bot> botRepository,
             IRepository<BotScript> scriptRepository,
-            IRepository<Bot, BotScript> botScriptRepository,
             IRepository<Player> playerRepository,
             IMapper<Bot, BotDto> botMapper,
             IMapper<Bot, BotToCreateDto> botToCreateMapper,
@@ -42,7 +40,6 @@ namespace CSharpWars.Logic
             _randomHelper = randomHelper;
             _botRepository = botRepository;
             _scriptRepository = scriptRepository;
-            _botScriptRepository = botScriptRepository;
             _playerRepository = playerRepository;
             _botMapper = botMapper;
             _botToCreateMapper = botToCreateMapper;
@@ -74,7 +71,7 @@ namespace CSharpWars.Logic
         {
             var bot = _botToCreateMapper.Map(botToCreate);
             var arena = await _arenaLogic.GetArena();
-            var player = await _playerRepository.Single(x => x.Id == botToCreate.PlayerId);
+            var player = await _playerRepository.Single(p => p.Id == botToCreate.PlayerId);
 
             if (player.LastDeployment >= DateTime.UtcNow.AddMinutes(-_configurationHelper.BotDeploymentLimit))
             {
@@ -87,22 +84,20 @@ namespace CSharpWars.Logic
             bot.Orientation = _randomHelper.Get<PossibleOrientations>();
             var bots = await GetAllActiveBots();
             var freeLocations = BuildFreeLocation(arena, bots);
-            var randomFreeLocation = freeLocations[_randomHelper.Get(freeLocations.Count)];
-            bot.X = randomFreeLocation.X;
-            bot.Y = randomFreeLocation.Y;
+            var (x, y) = freeLocations[_randomHelper.Get(freeLocations.Count)];
+            bot.X = x;
+            bot.Y = y;
             bot.FromX = bot.X;
             bot.FromY = bot.Y;
             bot.CurrentHealth = bot.MaximumHealth;
             bot.CurrentStamina = bot.MaximumStamina;
             bot.Memory = new Dictionary<String, String>().Serialize();
             bot.TimeOfDeath = DateTime.MaxValue;
+            bot.BotScript = new BotScript { Script = botToCreate.Script };
 
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                bot = await _botScriptRepository.Create(bot);
-                var botScript = await _scriptRepository.Single(x => x.Id == bot.Id);
-                botScript.Script = botToCreate.Script;
-                await _scriptRepository.Update(botScript);
+                bot = await _botRepository.Create(bot);
                 await _playerRepository.Update(player);
 
                 transaction.Complete();

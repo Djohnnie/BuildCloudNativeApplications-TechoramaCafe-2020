@@ -8,17 +8,17 @@ namespace CSharpWars.Logic
 {
     public class DangerLogic : IDangerLogic
     {
-        private readonly IRepository<Bot, BotScript> _botScriptRepository;
         private readonly IRepository<Player> _playerRepository;
+        private readonly IRepository<Bot> _botRepository;
         private readonly IRepository<Message> _messageRepository;
 
         public DangerLogic(
-            IRepository<Bot, BotScript> botScriptRepository,
             IRepository<Player> playerRepository,
+            IRepository<Bot> botRepository,
             IRepository<Message> messageRepository)
         {
-            _botScriptRepository = botScriptRepository;
             _playerRepository = playerRepository;
+            _botRepository = botRepository;
             _messageRepository = messageRepository;
         }
 
@@ -38,8 +38,8 @@ namespace CSharpWars.Logic
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 await CleanupMessages();
-                var bots = await _botScriptRepository.GetAll();
-                await _botScriptRepository.Delete(bots);
+                var bots = await _botRepository.GetAll();
+                await _botRepository.Delete(bots);
 
                 transaction.Complete();
             }
