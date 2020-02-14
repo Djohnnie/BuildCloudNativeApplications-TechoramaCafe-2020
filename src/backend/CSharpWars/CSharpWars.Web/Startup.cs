@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using static System.Convert;
-using static System.Environment;
 
 namespace CSharpWars.Web
 {
@@ -24,11 +22,11 @@ namespace CSharpWars.Web
         {
             services.ConfigurationHelper(c =>
             {
-                c.ConnectionString = GetEnvironmentVariable("CONNECTION_STRING");
-                c.ArenaSize = ToInt32(GetEnvironmentVariable("ARENA_SIZE"));
-                c.ValidationHost = GetEnvironmentVariable("VALIDATION_HOST");
-                c.PointsLimit = ToInt32(GetEnvironmentVariable("POINTS_LIMIT"));
-                c.BotDeploymentLimit = ToInt32(GetEnvironmentVariable("BOT_DEPLOYMENT_LIMIT"));
+                c.ConnectionString = Configuration.GetValue<string>("connection-string");
+                c.ArenaSize = Configuration.GetValue<int>("arena-size");
+                c.ValidationHost = Configuration.GetValue<string>("validation-host");
+                c.PointsLimit = Configuration.GetValue<int>("points-limit");
+                c.BotDeploymentLimit = Configuration.GetValue<int>("deployment-limit");
             });
 
             services.ConfigureWeb();

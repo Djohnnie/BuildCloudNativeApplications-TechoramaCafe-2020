@@ -1,7 +1,10 @@
 using System;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using static System.Environment;
 
 namespace CSharpWars.Validator
 {
@@ -9,22 +12,28 @@ namespace CSharpWars.Validator
     {
         public static void Main(string[] args)
         {
-            var certificateFileName = Environment.GetEnvironmentVariable("CERTIFICATE_FILENAME");
-            var certificatePassword = Environment.GetEnvironmentVariable("CERTIFICATE_PASSWORD");
-            CreateHostBuilder(args, certificateFileName, certificatePassword).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        // Additional configuration is required to successfully run gRPC on macOS.
-        // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
-        public static IHostBuilder CreateHostBuilder(string[] args, String certificateFileName, String certificatePassword) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureAppConfiguration(configBuilder =>
+                    {
+                        var keyVault = GetEnvironmentVariable("KEY_VAULT");
+                        var clientId = GetEnvironmentVariable("CLIENT_ID");
+                        var clientSecret = GetEnvironmentVariable("CLIENT_SECRET");
+                        configBuilder.AddAzureKeyVault(keyVault, clientId, clientSecret);
+                    });
                     webBuilder.UseKestrel();
                     webBuilder.ConfigureKestrel((context, options) =>
                     {
-                        options.Listen(IPAddress.Any, 5555,
-                            listenOptions => { listenOptions.UseHttps(certificateFileName, certificatePassword); });
+                        var certificateKey = GetEnvironmentVariable("CERTIFICATE_KEY");
+                        var certificateData = context.Configuration.GetValue<string>(certificateKey);
+                        var serverCertificate = new X509Certificate2(Convert.FromBase64String(certificateData));
+                        options.Listen(IPAddress.Any, 5000,
+                            listenOptions => { listenOptions.UseHttps(serverCertificate); });
                     });
                     webBuilder.UseStartup<Startup>();
                 });
