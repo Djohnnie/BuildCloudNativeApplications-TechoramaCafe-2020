@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
 
 namespace CSharpWars.Web.Api
 {
@@ -25,6 +26,7 @@ namespace CSharpWars.Web.Api
                 c.ArenaSize = Configuration.GetValue<int>("arena-size");
             });
 
+
             services.ConfigureWebApi();
         }
 
@@ -36,11 +38,13 @@ namespace CSharpWars.Web.Api
             }
 
             app.UseRouting();
+            app.UseHttpMetrics();
             app.UseAuthorization();
             app.UseCors("AllowAll");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapMetrics();
             });
         }
     }
