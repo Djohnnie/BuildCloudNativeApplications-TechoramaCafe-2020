@@ -16,7 +16,7 @@ namespace CSharpWars.Processor
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<Worker> _logger;
 
-        public Worker(IServiceScopeFactory scopeFactory,ILogger<Worker> logger)
+        public Worker(IServiceScopeFactory scopeFactory, ILogger<Worker> logger)
         {
             _scopeFactory = scopeFactory;
             _logger = logger;
@@ -35,11 +35,11 @@ namespace CSharpWars.Processor
                         using var sw = new SimpleStopwatch();
                         var middleware = scopedServiceProvider.ServiceProvider.GetService<IMiddleware>();
                         await middleware.Process();
-                        _logger.LogInformation($"[ CSharpWars Script Processor - PROCESSING {sw.ElapsedMilliseconds}ms! ]");
+                        _logger.LogInformation("[ CSharpWars Script Processor - PROCESSING {ElapsedMilliseconds}ms! ]", sw.ElapsedMilliseconds);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"[ CSharpWars Script Processor - EXCEPTION - '{ex.Message}'! ]");
+                        _logger.LogError(ex, $"[ CSharpWars Script Processor - EXCEPTION - '{ex.Message}'! ]");
                     }
 
                     var timeTaken = DateTime.UtcNow - start;
