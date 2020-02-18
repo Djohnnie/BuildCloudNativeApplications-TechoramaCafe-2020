@@ -30,10 +30,17 @@ namespace CSharpWars.Web
                     webBuilder.ConfigureKestrel((context, options) =>
                     {
                         var certificateKey = GetEnvironmentVariable("CERTIFICATE_KEY");
-                        var certificateData = context.Configuration.GetValue<string>(certificateKey);
-                        var serverCertificate = new X509Certificate2(Convert.FromBase64String(certificateData));
-                        options.Listen(IPAddress.Any, 5000,
-                            listenOptions => { listenOptions.UseHttps(serverCertificate); });
+                        if (string.IsNullOrEmpty(certificateKey))
+                        {
+                            options.Listen(IPAddress.Any, 5000);
+                        }
+                        else
+                        {
+                            var certificateData = context.Configuration.GetValue<string>(certificateKey);
+                            var serverCertificate = new X509Certificate2(Convert.FromBase64String(certificateData));
+                            options.Listen(IPAddress.Any, 5000,
+                                listenOptions => { listenOptions.UseHttps(serverCertificate); });
+                        }
                     });
                     webBuilder.UseStartup<Startup>();
                 });
