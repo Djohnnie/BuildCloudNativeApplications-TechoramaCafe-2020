@@ -26,7 +26,7 @@ namespace CSharpWars.Web.Helpers
             {
                 var request = new ScriptValidationRequest { Script = script.Script };
 
-                var channel = GrpcChannel.ForAddress("https://api.djohnnie.be:5555/");
+                var channel = GrpcChannel.ForAddress(_configurationHelper.ValidationHost);
                 var client = new ScriptValidator.ScriptValidatorClient(channel);
                 var response = await client.ValidateAsync(request);
 
