@@ -75,22 +75,26 @@ steps:
     cd ./src/backend/CSharpWars/CSharpWars.Web.Api
     docker build -t djohnnie/csharpwars-cloudnative-api .
     docker login -u $(dockerId) -p $(dockerPwd)
-    docker push djohnnie/csharpwars-cloudnative-api
+    docker tag djohnnie/csharpwars-cloudnative-api:latest djohnnie/csharpwars-cloudnative-api:1.0.0
+    docker push djohnnie/csharpwars-cloudnative-api:1.0.0
 
 - script: |
     cd ./src/backend/CSharpWars/CSharpWars.Validator
     docker build -t djohnnie/csharpwars-cloudnative-validator .
     docker login -u $(dockerId) -p $(dockerPwd)
-    docker push djohnnie/csharpwars-cloudnative-validator
+    docker tag djohnnie/csharpwars-cloudnative-validator:latest djohnnie/csharpwars-cloudnative-validator:1.0.0
+    docker push djohnnie/csharpwars-cloudnative-validator:1.0.0
 
 - script: |
     cd ./src/backend/CSharpWars/CSharpWars.Web
     docker build -t djohnnie/csharpwars-cloudnative-web .
     docker login -u $(dockerId) -p $(dockerPwd)
-    docker push djohnnie/csharpwars-cloudnative-web
+    docker tag djohnnie/csharpwars-cloudnative-web:latest djohnnie/csharpwars-cloudnative-web:1.0.0
+    docker push djohnnie/csharpwars-cloudnative-web:1.0.0
 
 - script: |
     cd ./src/backend/CSharpWars/CSharpWars.Processor
     docker build -t djohnnie/csharpwars-cloudnative-processor .
     docker login -u $(dockerId) -p $(dockerPwd)
-    docker push djohnnie/csharpwars-cloudnative-processor
+    docker tag djohnnie/csharpwars-cloudnative-processor:latest djohnnie/csharpwars-cloudnative-processor:1.0.0
+    docker push djohnnie/csharpwars-cloudnative-processor:1.0.0
