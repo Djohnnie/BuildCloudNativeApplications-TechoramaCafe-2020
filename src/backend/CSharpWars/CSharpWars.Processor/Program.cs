@@ -33,7 +33,7 @@ namespace CSharpWars.Processor
                     services.ConfigurationHelper(c =>
                     {
                         c.ConnectionString = hostContext.Configuration.GetValue<string>("connection-string");
-                        c.ArenaSize = hostContext.Configuration.GetValue<int>("arena-size");
+                        c.ArenaSize = Convert.ToInt32(Environment.GetEnvironmentVariable("ARENA_SIZE"));
                     });
                     services.ConfigureScriptProcessor();
                     services.AddHostedService<Worker>();
@@ -41,14 +41,17 @@ namespace CSharpWars.Processor
                 .ConfigureLogging((hostContext, logging) =>
                 {
                     var elasticUri = hostContext.Configuration.GetValue<string>("elastic-uri");
-                    Log.Logger = new LoggerConfiguration()
-                        .Enrich.FromLogContext()
-                        .Enrich.WithExceptionDetails()
-                        .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
-                        {
-                            AutoRegisterTemplate = true
-                        }).CreateLogger();
-                    logging.AddSerilog();
+                    if (!string.IsNullOrEmpty(elasticUri))
+                    {
+                        Log.Logger = new LoggerConfiguration()
+                            .Enrich.FromLogContext()
+                            .Enrich.WithExceptionDetails()
+                            .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                            {
+                                AutoRegisterTemplate = true
+                            }).CreateLogger();
+                        logging.AddSerilog();
+                    }
                 });
     }
 }

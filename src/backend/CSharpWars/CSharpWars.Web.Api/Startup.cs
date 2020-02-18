@@ -1,3 +1,4 @@
+using System;
 using CSharpWars.Common.DependencyInjection;
 using CSharpWars.Web.Api.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
@@ -23,9 +24,8 @@ namespace CSharpWars.Web.Api
             services.ConfigurationHelper(c =>
             {
                 c.ConnectionString = Configuration.GetValue<string>("connection-string");
-                c.ArenaSize = Configuration.GetValue<int>("arena-size");
+                c.ArenaSize = Convert.ToInt32(Environment.GetEnvironmentVariable("ARENA_SIZE"));
             });
-
 
             services.ConfigureWebApi();
         }

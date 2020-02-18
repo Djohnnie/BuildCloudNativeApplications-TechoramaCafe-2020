@@ -1,3 +1,4 @@
+using System;
 using CSharpWars.Common.DependencyInjection;
 using CSharpWars.Web.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
@@ -24,10 +25,10 @@ namespace CSharpWars.Web
             services.ConfigurationHelper(c =>
             {
                 c.ConnectionString = Configuration.GetValue<string>("connection-string");
-                c.ArenaSize = Configuration.GetValue<int>("arena-size");
-                c.ValidationHost = Configuration.GetValue<string>("validation-host");
-                c.PointsLimit = Configuration.GetValue<int>("points-limit");
-                c.BotDeploymentLimit = Configuration.GetValue<int>("deployment-limit");
+                c.ArenaSize = Convert.ToInt32(Environment.GetEnvironmentVariable("ARENA_SIZE"));
+                c.ValidationHost = Environment.GetEnvironmentVariable("VALIDATION_HOST");
+                c.PointsLimit = Convert.ToInt32(Environment.GetEnvironmentVariable("POINTS_LIMIT"));
+                c.BotDeploymentLimit = Convert.ToInt32(Environment.GetEnvironmentVariable("DEPLOYMENT_LIMIT"));
             });
 
             services.ConfigureWeb();
