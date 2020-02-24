@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace CSharpWars.Web.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class MessagesController : ApiController<IMessageLogic>
     {
