@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CSharpWars.Common.Configuration.Interfaces;
@@ -26,6 +27,7 @@ namespace CSharpWars.Web.Helpers
             {
                 var request = new ScriptValidationRequest { Script = script.Script };
 
+                AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
                 var channel = GrpcChannel.ForAddress(_configurationHelper.ValidationHost);
                 var client = new ScriptValidator.ScriptValidatorClient(channel);
                 var response = await client.ValidateAsync(request);

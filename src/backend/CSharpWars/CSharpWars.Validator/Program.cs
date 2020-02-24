@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using static System.Environment;
@@ -32,7 +33,7 @@ namespace CSharpWars.Validator
                         var certificateKey = GetEnvironmentVariable("CERTIFICATE_KEY");
                         if (string.IsNullOrEmpty(certificateKey))
                         {
-                            options.Listen(IPAddress.Any, 5000);
+                            options.Listen(IPAddress.Any, 5000, configure => configure.Protocols = HttpProtocols.Http2);
                         }
                         else
                         {
