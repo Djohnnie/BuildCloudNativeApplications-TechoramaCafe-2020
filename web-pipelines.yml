@@ -4,7 +4,13 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- master
+  branches:
+    include:
+    - master
+    - releases/*
+  paths:
+    include:
+    - src/backend/CSharpWars/CSharpWars.Web
 
 pool:
   vmImage: 'ubuntu-16.04'
@@ -60,32 +66,7 @@ steps:
     codecoverageTool: cobertura
 
 - script: |
-    dotnet publish ./src/backend/CSharpWars/CSharpWars.Web.Api --configuration "Release" --output ./src/backend/CSharpWars/CSharpWars.Web.Api/bin/Release/publish
-
-- script: |
-    dotnet publish ./src/backend/CSharpWars/CSharpWars.Validator --configuration "Release" --output ./src/backend/CSharpWars/CSharpWars.Validator/bin/Release/publish
-
-- script: |
     dotnet publish ./src/backend/CSharpWars/CSharpWars.Web --configuration "Release" --output ./src/backend/CSharpWars/CSharpWars.Web/bin/Release/publish
-
-- script: |
-    dotnet publish ./src/backend/CSharpWars/CSharpWars.Processor --configuration "Release" --output ./src/backend/CSharpWars/CSharpWars.Processor/bin/Release/publish
-
-- script: |
-    cd ./src/backend/CSharpWars/CSharpWars.Web.Api
-    docker build -t djohnnie/csharpwars-cloudnative-api .
-    docker login -u $(dockerId) -p $(dockerPwd)
-    docker tag djohnnie/csharpwars-cloudnative-api:latest djohnnie/csharpwars-cloudnative-api:1.0.0
-    docker push djohnnie/csharpwars-cloudnative-api:1.0.0
-    docker push djohnnie/csharpwars-cloudnative-api:latest
-
-- script: |
-    cd ./src/backend/CSharpWars/CSharpWars.Validator
-    docker build -t djohnnie/csharpwars-cloudnative-validator .
-    docker login -u $(dockerId) -p $(dockerPwd)
-    docker tag djohnnie/csharpwars-cloudnative-validator:latest djohnnie/csharpwars-cloudnative-validator:1.0.0
-    docker push djohnnie/csharpwars-cloudnative-validator:1.0.0
-    docker push djohnnie/csharpwars-cloudnative-validator:latest
 
 - script: |
     cd ./src/backend/CSharpWars/CSharpWars.Web
@@ -94,11 +75,3 @@ steps:
     docker tag djohnnie/csharpwars-cloudnative-web:latest djohnnie/csharpwars-cloudnative-web:1.0.0
     docker push djohnnie/csharpwars-cloudnative-web:1.0.0
     docker push djohnnie/csharpwars-cloudnative-web:latest
-
-- script: |
-    cd ./src/backend/CSharpWars/CSharpWars.Processor
-    docker build -t djohnnie/csharpwars-cloudnative-processor .
-    docker login -u $(dockerId) -p $(dockerPwd)
-    docker tag djohnnie/csharpwars-cloudnative-processor:latest djohnnie/csharpwars-cloudnative-processor:1.0.0
-    docker push djohnnie/csharpwars-cloudnative-processor:1.0.0
-    docker push djohnnie/csharpwars-cloudnative-processor:latest
